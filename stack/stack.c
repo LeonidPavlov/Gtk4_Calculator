@@ -75,6 +75,7 @@ Stack * set_char_literal_into_stack(const char * str)
 {
     int length = (int) strlen(str);
     Stack * st = new_stack(sizeof(char));
+    char ch = EOF; push(st, (char*)&ch);
     for (int j = length - 1; j >= 0; j--) push(st, (char*)&str[j]);
     return st;
 }
