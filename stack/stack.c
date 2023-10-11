@@ -1,13 +1,12 @@
 #include "stack.h"
 
-Stack * new_stack(int type_size, int capacity, const char * print_format)
+Stack * new_stack(int type_size)
 {
     Stack * stack = malloc(sizeof(Stack));
     stack->type_size = type_size;
-    stack->print_format = print_format;
     stack->count = -1;
-    stack->capacity = capacity;
-    stack->items = calloc(type_size, capacity * type_size);
+    stack->capacity = INITAL_CAPACITY;
+    stack->items = calloc(type_size, INITAL_CAPACITY * type_size);
     return stack;
 }
 
@@ -15,7 +14,7 @@ bool push(Stack * st, const void * aspirant)
 {
     if (is_full(st)) 
     {
-        st->capacity += st->capacity/2;
+        st->capacity += st->capacity;
         st->items = realloc(st->items, st->capacity);
     }
     st->count++;
@@ -57,3 +56,27 @@ void * pop(Stack * st)
         return target;
     }
 }
+
+void * peek(Stack * st)
+{
+    if (is_empty(st))
+    {
+        fprintf(stderr, "acquire empty stack\n");
+        return NULL;
+    }
+    else
+    {
+        void * result = st->items + st->count * st->type_size;
+        return result;
+    }
+}
+
+Stack * set_char_literal_into_stack(const char * str)
+{
+    int length = (int) strlen(str);
+    Stack * st = new_stack(sizeof(char));
+    for (int j = length - 1; j >= 0; j--) push(st, (char*)&str[j]);
+    return st;
+}
+
+

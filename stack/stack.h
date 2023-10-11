@@ -6,6 +6,8 @@
 #ifndef STACK_LNP_H
 #define STACK_LNP_H
 
+#define INITAL_CAPACITY 128
+
 typedef struct stack
 {
     int type_size;
@@ -17,33 +19,46 @@ typedef struct stack
 
 
 /*
-    return stack without capacity
+    return pointer to stack with initial capacity
 */
-Stack * new_stack(int type_size, int capacity, const char * print_format);
+Stack * new_stack(int type_size);
+
+
 bool free_memory(Stack * stack);
 
 static inline bool is_empty(Stack * stack) { return stack->count == -1 ? true : false; }
 static inline bool is_full(Stack * stack) 
                 { return stack->count == stack->capacity - 1 ? true : false; }
-bool push(Stack * stack, const void * aspirant);
 
-/* need to free memory */
+bool push(Stack * stack, const void * aspirant);
+/*
+    if empty return NULL !!!
+*/
 void * pop(Stack * stack);
 
+/* count + 1 = amount element */
 static inline int count(Stack * stack) { return stack->count; }
 
+/* current size of stack */
 static inline int capacity(Stack * stack) { return stack->capacity; }
 
-/* need to free memory */
-void peek(Stack * stack, int position);
+/* 
+    return pointer on top element without ejecting from stack 
+    if stack is empty return NULL !!!
+*/
+void * peek(Stack * stack);
 
-// push():  If the stack is full then the overflow condition occurs.
-// pop():If the stack is empty means that no element exists in the stack, this state is known as an underflow state.
-// isEmpty(): It determines whether the stack is empty or not.
-// isFull(): It determines whether the stack is full or not.'
-// peek(): It returns the element at the given position.
-// count(): It returns the total number of elements available in a stack.
-// change(): It changes the element at the given position.
-// display(): It prints all the elements available in the stack.
+/*
+    METHODS FOR CALCULATOR PROGRAMS
+*/
+
+/*
+    set string in stack to imitate hand input
+    return function peek() result -> first character
+    return pointer to Stack instance need to free memory 
+    with free_memory(...) function
+*/
+Stack * set_char_literal_into_stack(const char * str);
+
 
 #endif
