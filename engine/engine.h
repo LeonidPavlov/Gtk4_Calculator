@@ -3,6 +3,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "../stack/stack.h"
+
+
 #ifndef CALCULATOR_ENGINE_H
 #define CALCULATOR_ENGINE_H
 
@@ -18,13 +21,10 @@ typedef struct Buffer {
 
 int set_buffer(Token token);
 Token unset_buffer();
-int is_full();
+int full();
 Token next_token(FILE * input);
 void print_token(Token token);
 
-void calculate_stdin();
-void calculate_file_content(const char * filename);
-void calculate();
 
 double expression();
 double term();
@@ -45,4 +45,13 @@ double extract_double_literal(char start_char, FILE * input);
     return EOF if wrong symbol 
 */
 char next_acceptable_symbol(FILE * input);
+
+void calculate_stdin();
+
+void calculate_stack(const char * tests[], int size);
+
+static int read_symbol_from_stack(FILE * input);
+
+static int put_symbol_to_stack(int ch, FILE * input);
+
 #endif

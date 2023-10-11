@@ -54,7 +54,6 @@ void * peek(Stack * stack);
 
 /*
     set string in stack to imitate hand input
-    return function peek() result -> first character
     return pointer to Stack instance need to free memory 
     with free_memory(...) function
 */

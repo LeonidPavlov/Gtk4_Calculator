@@ -1,5 +1,5 @@
 all: engine.o test.o engine.h
-	gcc -g engine.o test.o ../stack/stack.o -o test.out && ./test.out
+	gcc -g engine.o test.o -o test.out && ./test.out
 
 test.o : test.c engine.h
 	gcc -c test.c
@@ -9,6 +9,3 @@ engine.o : engine.c engine.h
 
 clear :
 	rm -f *.o *.out
-
-val :
-	valgrind ./test.out

@@ -3,29 +3,21 @@
 static FILE * input;
 static Buffer buffer = {0};
 
+int (*ptr_to_get)(FILE * file) = NULL;
+int (*ptr_to_ungetc)(int ch, FILE * file) = NULL;
+
 void calculate_stdin()
 {
-        input = stdin;
-        calculate();  
-}
-
-void calculate_file_content(const char * filename)
-{
-    input = fopen(filename, "r");
-    if (input == NULL) 
+    puts("\nCALCULATE FROM SDIN");
+    input = stdin;
+    ptr_to_get = getc;
+    ptr_to_ungetc = ungetc;
+    while (1)
     {
-        fprintf(stderr, "can't open %s file\n",filename);
-        exit(1);
+        printf(" = %lf\n", expression());
+        Token t = unset_buffer();
     }
-    calculate();
-    if (input != NULL) fclose(input);
-}
-
-void calculate()
-{
-    printf(" = %lf\n", expression());
-    Token t = unset_buffer();
-}   
+} 
 
 double expression()
 {
@@ -105,10 +97,10 @@ double extract_double_literal(char start_char, FILE * input)
         while(isdigit(ch) || ch == '.')
         {
             temp[j++] = ch;
-            ch = getc(input);
+            ch = (*ptr_to_get)(input);
         }
         temp[j] = '\0';
-        ungetc(ch,input);
+        int huy = (*ptr_to_ungetc)(ch,input);
     }
     sscanf(temp, "%lf", &result);
     return result;
@@ -119,7 +111,7 @@ char next_acceptable_symbol(FILE * input)
     char result = 0;
     char ch = 0;
     do {
-        ch = getc(input);
+        ch = (*ptr_to_get)(input);
     } while(ch == ' ' || ch == '\t' || ch == '\n');
     if (ch >= '(' && ch <= '9') result = ch;
     else if (ch == '=' || ch == EOF) result = ch;
@@ -147,7 +139,7 @@ Token unset_buffer()
     return buffer.token;
 }
 
-int is_full() { return buffer.fullness; }
+int full() { return buffer.fullness; }
 
 void print_token(Token token) 
     { printf("symbol %c value %lf\n", token.symbol, token.value); }
@@ -155,7 +147,7 @@ void print_token(Token token)
 Token next_token(FILE * input) 
 {
     Token token;
-    if (is_full())
+    if (full())
     {
         token = unset_buffer();
         return token;
@@ -176,4 +168,34 @@ Token next_token(FILE * input)
         }
         return token;
     } 
+
+}
+
+static Stack * st;
+void calculate_stack(const char * tests[], int size)
+{
+    puts("\nCALCULATE FROM STACK");
+    input = NULL;
+    ptr_to_get = read_symbol_from_stack;
+    ptr_to_ungetc = put_symbol_to_stack;
+    for (int j = 0; j < size; j++)
+    {
+        st = set_char_literal_into_stack(tests[j]);
+        printf("%s", tests[j]);
+        printf(" %lf\n", expression());
+        Token t = unset_buffer();       
+        free_memory(st);
+    }
+}
+
+int read_symbol_from_stack(FILE * input)
+{
+    char * letter = pop(st);
+    return *letter;
+}
+
+static int put_symbol_to_stack(int ch, FILE * input)
+{
+    int chr = ch;
+    push(st,(char *)&chr);
 }
