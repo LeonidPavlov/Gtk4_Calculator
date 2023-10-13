@@ -2,6 +2,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
+#include <float.h>
 
 #include "../stack/stack.h"
 
@@ -39,6 +40,12 @@ double primary();
     return error: 0.0
 */
 double extract_double_literal(char start_char, FILE * input);
+
+/*
+    analysis existence exponent part of number literal
+*/
+void add_exponent_tail(char start_char, FILE * input, char * char_array, int index);
+
 /*
     skip spaces and tabs
     return symbol if it is number or symbol acceptable for calculator

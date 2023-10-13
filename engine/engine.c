@@ -14,7 +14,7 @@ void calculate_stdin()
     ptr_to_ungetc = ungetc;
     while (1)
     {
-        printf(" = %lf\n", expression());
+        printf(" %le\n", expression());
         Token t = unset_buffer();
     }
 } 
@@ -83,14 +83,20 @@ double primary()
         }
         return d;
     } 
-    else fprintf(stderr, "END PRIMARY METHOD\n");
+    else if (t.symbol == '+') return primary();
+    else if (t.symbol == '-') return  - primary();
+    else 
+    {
+        fprintf(stderr, "END PRIMARY METHOD BAD INPUT\n");
+        exit(1);
+    }
 }
 
 double extract_double_literal(char start_char, FILE * input)
 {
     char temp[50] = {0};
     double result = 0;
-    if ( isdigit(start_char) || start_char == '.' )
+    if ( isdigit(start_char) || start_char == '.'  )
     {
         char ch = start_char;
         int j = 0;
@@ -99,11 +105,48 @@ double extract_double_literal(char start_char, FILE * input)
             temp[j++] = ch;
             ch = (*ptr_to_get)(input);
         }
-        temp[j] = '\0';
-        int huy = (*ptr_to_ungetc)(ch,input);
+        add_exponent_tail(ch, input, temp, j);
     }
     sscanf(temp, "%lf", &result);
     return result;
+}
+
+void add_exponent_tail(char start_char, FILE * input, char * char_array, int index)
+{
+    char ch = start_char;
+    char next = 0;
+    char next_next = 0;
+    int j = index;
+    if (ch == 'e' || ch == 'E')
+    {
+        next = (*ptr_to_get)(input);
+        next_next = (*ptr_to_get)(input);
+        if ( (next == '-' || next == '+') && isdigit(next_next))
+        {
+            char_array[j++] = ch;
+            char_array[j++] = next;
+            do {
+                char_array[j++] = next_next;
+                next_next = (*ptr_to_get)(input);
+            } while (isdigit(next_next));
+            (*ptr_to_ungetc)(next_next, input);   
+        }
+        else if (isdigit(next))
+        {
+            (*ptr_to_ungetc)(next_next, input);
+            char_array[j++] = ch;
+            do {
+                char_array[j++] = next;
+                next = (*ptr_to_get)(input);
+            } while (isdigit(next));
+            (*ptr_to_ungetc)(next, input);   
+        }
+        else
+        {
+            fprintf(stderr, "WRONG EXPONENT REPRESENTATION\n");
+        }
+    }
+    else (*ptr_to_ungetc)(ch, input);    
 }
 
 char next_acceptable_symbol(FILE * input)
@@ -182,7 +225,7 @@ void calculate_stack(const char * tests[], int size)
     {
         st = set_char_literal_into_stack(tests[j]);
         printf("%s", tests[j]);
-        printf(" %lf\n", expression());
+        printf(" %le\n", expression());
         Token t = unset_buffer();       
         free_memory(st);
     }
