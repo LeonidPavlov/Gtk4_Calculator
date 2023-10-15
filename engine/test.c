@@ -14,7 +14,6 @@ const char * tests[] =
 
 int main()
 {
-    // calculate_stdin();
     calculate_stack(tests, sizeof(tests)/ sizeof(char *));
-    calculate_stdin();
+    // calculate_stdin();
 }

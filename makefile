@@ -6,7 +6,7 @@ all : dist/${file}.out
 	./dist/${file}.out
 
 dist/${file}.out : ${file}.o
-	mkdir dist && gcc ${flags} ${file}.o ${libs} -o dist/${file}.out
+	mkdir -p dist && gcc ${flags} ${file}.o ${libs} -o dist/${file}.out
 
 ${file}.o : ${file}.c
 	gcc ${flags} -c ${file}.c ${libs}
